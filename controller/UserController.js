@@ -11,7 +11,6 @@ module.exports.register = async (req,res,next) => {
         const user = await User.create({
             username,
             hashedPassword,
-            avatarImage,
             password: hashedPassword,
         })
         delete user.password
@@ -37,14 +36,15 @@ module.exports.login = async (req, res, next )=> {
     }
 }
 
-module.exports.setAvatar = async (req, res, next )=> {
+module.exports.setAvatar = async (req, res, next ) => {
     try{
         const {username, isAvatarImageSet, avatarImage} = req.body;
-        console.log({username, isAvatarImageSet, avatarImage})
+     
         if(isAvatarImageSet){
             const result = await User.findOneAndUpdate({username},{isAvatarImageSet,avatarImage})
-            console.log(result)
-            return res.json({status:true})
+            result.isAvatarImageSet = isAvatarImageSet
+            result.avatarImage = avatarImage
+            return res.json({status:true, result})
         }else{
             return res.json({status:false})
         }
@@ -52,3 +52,17 @@ module.exports.setAvatar = async (req, res, next )=> {
         next(ex)
     }
 }
+
+
+module.exports.getAllUsers = async (req, res, next) => {
+    try{
+        const users = await User.find({_id:{$ne: req.params.id}}).select([
+            "username","avatarImage","_id"
+        ])
+        return res.json(users)
+    }catch(ex){
+        next(ex)
+    }
+}
+
+ 
