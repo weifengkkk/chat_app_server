@@ -7,15 +7,10 @@ const app = express()
 const socket = require('socket.io')
 require('dotenv').config();
 
-
+app.use(cors())
 app.use(express.json())
 app.use('/api',userRoutes);
 app.use('/api',messageRoutes);
-app.use(cors({
-  origin: ['http://localhost:3000'], // 所要允许跨域的ip
-  methods: ['GET', 'POST'],
-  alloweHeaders: ['Conten-Type', 'Authorization']
-}));
 
 mongoose.connect(process.env.MONGO_URL,{
     useUnifiedTopology: true,
